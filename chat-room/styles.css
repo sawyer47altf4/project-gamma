@@ -1,0 +1,13 @@
+body { background-color: rgb(200, 162, 200)
+
+
+
+
+}
+.center-text {
+    text-align: center;
+  }
+  
+  a.center-text {
+    display: block;
+  }
