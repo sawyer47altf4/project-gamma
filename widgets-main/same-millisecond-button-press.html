@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<title>Submillisecond Button Press Challenge</title>
+		<link rel="icon" href="/assets/images/logo.png" type="image/icon">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</head>
+	<body onmousedown="ev()" onmouseup="ev()" onkeydown="ev()" onkeyup="ev()" onscroll="ev()" oncontextmenu="return false;" style="height:1000px;">
+		<a href="index.html">Back</a>
+		<h1>Submillisecond Button Press Challenge</h1>
+		<p>Goal: press 2 buttons within 0.1ms.</p>
+		<p>Note: this challenge works best in Google Chrome. It doesn't work on Firefox for timescales of less than 1ms.</p>
+		<div id="interval" style="height:400px; overflow:scroll; background-color:lightgrey;"></div>
+		<p id="count1"></p>
+		<p id="count2"></p>
+	<script>
+		var time=window.performance.now();
+		var cnt=0,last1=0,last2=0,last=[];
+
+		function ev(){
+			var now=window.performance.now(),dif=now-time;
+			if(dif>500) document.getElementById("interval").innerHTML="";
+			if(dif>1){
+				dif=Math.round(dif);
+				document.getElementById("interval").innerHTML=dif+"<br>"+document.getElementsByTagName("div")[0].innerHTML;
+			}
+			else if(dif>0.1){
+				document.getElementById("interval").innerHTML="<span style=\"background-color:gold;\">"+dif+"</span><br>"+document.getElementsByTagName("div")[0].innerHTML;
+			}
+			else{
+				document.getElementById("interval").innerHTML="<div style=\"background-color:black; color:gold;\">"+dif+"</div><br>"+document.getElementsByTagName("div")[0].innerHTML;	
+			}
+			last[cnt++]=now;
+			while(last[last1]<now-5000) last1++;
+			while(last[last2]<now-60000) last2++;
+			document.getElementById("count1").innerHTML="5 second average: "+(cnt-last1)/5+"/s";
+			document.getElementById("count2").innerHTML="60 second average: "+(cnt-last2)/60+"/s";
+			time=now;
+		}
+	</script>
+	</body>
+</html>

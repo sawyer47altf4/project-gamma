@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<title>Aaeria | Widgets</title>
+		<link rel="icon" href="assets/images/logo.ico" type="image/icon">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="assets/styles.css" type="text/css">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+	</head>
+	<body>
+		<header>
+			<h1><a href="index.html">Widgets</a></h1>
+			<a href="https://aaeria.me"><img src="assets/images/logo.ico" alt="logo"></a>
+		</header>
+		<div class="main">
+			<a href="index.html">Back</a>
+			<h1>Next/Previous Prime</h1>
+			<p>Finds the smallest prime above a given number or the largest prime below it.</p>
+			<label for="next-prime-in">Input:</label>
+			<input type="number" id="next-prime-in" onchange="nextPrime()">
+			<p>Next Prime:</p>
+			<p id="next-prime-out1"></p>
+			<p>Last Prime:</p>
+			<p id="next-prime-out2"></p>
+			<p id="time"></p>
+			<h2>Comment</h2>
+			<p>This program uses the Miller–Rabin primality test to quickly tell if a number is prime. 
+				It runs quickly because the distance between prime numbers remains small even as the primes 
+				become quite large.</p>
+		</div>
+		<footer>
+			<a href="https://github.com/zzaria/widgets"><i class="fab fa-github"></i></a>
+			<div class="bottom">
+				<p>2020 | <a href="https://aaeria.me">Aaeria</a></p>
+			</div>
+		</footer>
+	</body>
+	<script src="assets/main.js"></script>
+</html>

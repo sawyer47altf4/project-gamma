@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<title>Aaeria | Widgets</title>
+		<link rel="icon" href="assets/images/logo.ico" type="image/icon">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="assets/styles.css" type="text/css">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+	</head>
+	<body>
+		<header>
+			<h1><a href="index.html">Widgets</a></h1>
+			<a href="https://aaeria.me"><img src="assets/images/logo.ico" alt="logo"></a>
+		</header>
+		<div class="main">
+			<a href="index.html">Back</a>
+			<h1>Art With Divided Plane (Rasterized)</h1>
+			<p id="note"></p>
+			<div>
+				Image Size:
+				<input class="smallInput" type="number" onchange="updW(event)">
+				<input class="smallInput" type="number" onchange="updH(event)">
+				Line Count/Pattern: 
+				<input class="smallInput" type="number" onchange="updLineNumb(event)">
+				<select onchange="updStretch(event)">
+					<option value="random">Random</option>
+					<option value="stretch">Stretched</option>
+					<option value="axis">Axis-aligned</option>
+					<option value="grid">Grid</option>
+				</select>
+				Region Style: 
+				<select onchange="updRegionColor(event)">
+					<option value="color">Color</option>
+					<option value="grey">Grey</option>
+					<option value="custom">Custom</option>
+					<option value="customSimilar">Similar</option>
+				</select>
+				<div id="customColor" style="display:none;">
+					Enter a list of HTML color names or hex codes, separated by spaces:
+					<textarea id="customColorList"></textarea>
+				</div>
+				<button onclick="gen()">Generate</button>
+			</div>
+			<canvas id="picture">
+			</canvas>
+			<p>Fewer options, more lines.</p>
+		</div>
+		<footer>
+			<a href="https://github.com/zzaria/widgets"><i class="fab fa-github"></i></a>
+			<div class="bottom">
+				<p>2020 | <a href="https://aaeria.me">Aaeria</a></p>
+			</div>
+		</footer>
+	</body>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.6.1/randomColor.min.js"></script>
+	<script>
+		var canvas=document.getElementById("picture"),canv=canvas.getContext("2d");
+		var W=window.innerWidth*0.6,H=window.innerHeight*0.6,linetype="random",regionColor="color";
+		var n=10,lines,lis,is,gr,cur,init,cnt=0,maxX,minX,maxY,minY,colors;
+		gen();
+		function updW(e){
+			W=Math.max(1,Math.min(10000,e.target.value));
+		}
+		function updH(e){
+			H=Math.max(1,Math.min(10000,e.target.value));
+		}
+		function updStretch(e){
+			linetype=e.target.value;
+		}
+		function updLineNumb(e){
+			n=Math.max(0,Math.min(10000,e.target.value));
+			if(n>2000) document.getElementById("note").innerHTML="Warning: this may take a lot of time."
+			else document.getElementById("note").innerHTML="";
+		}
+		function updRegionColor(e){
+			regionColor=e.target.value;
+			if(regionColor==="custom"||regionColor==="customSimilar") document.getElementById("customColor").style['display']='block';
+			else document.getElementById("customColor").style['display']='none';
+		}
+		function gen(){ // parallel lines ok, vertical lines ok, 3 lines intersection not ok
+			var start=Date.now();
+			canv.clearRect(0,0,W,H);
+			canvas.width=W; canvas.height=H;
+			lines=[]; lis=[]; is=[]; gr=[];
+			minX=minY=1e9; maxX=maxY=-1e9;
+			colors=document.getElementById("customColorList").value.split(" ");
+			for(let i=0;i<n;i++){
+				if(linetype==="stretch"){
+					if(Math.random()<H/(H+W)) 
+						lines.push([[0,Math.random()*H],[W,Math.random()*H]]);
+					else
+						lines.push([[Math.random()*W,0],[Math.random()*W,H]]);
+				}
+				else if(linetype==="axis"){
+					let temp=Math.random();
+					if(Math.random()<H/(H+W)) 
+						lines.push([[0,temp*H],[W,temp*H]]);
+					else
+						lines.push([[temp*W,0],[temp*W,H]]);
+				}
+				else if(linetype==="grid"){
+					let temp=(H+W)/(n+2);
+					if((i+1)*temp<H) 
+						lines.push([[0,(i+1)*temp],[W,(i+1)*temp]]);
+					else
+						lines.push([[(n-i)*temp,0],[(n-i)*temp,H]]);
+				}
+				else{
+					let x=Math.random()*W,y=Math.random()*H;
+					lines.push([[x,y],[x+Math.random()*10-5,y+Math.random()*10-5]]);
+				}
+			}
+			n+=4;
+			lines.push([[0,0],[0,H]],[[W,0],[W,H]],[[0,0],[W,0]],[[0,H],[W,H]]);
+			for(let i=0;i<n;i++) lis[i]=[];
+			for(let i=0;i<n;i++) for(let j=0;j<i;j++){
+				var ix=intersect(lines[i],lines[j]);
+				if(ix==null) continue;
+				ix[2]=is.length; is.push(ix);
+				lis[i].push(ix); lis[j].push(ix);
+			}
+			m=is.length;
+			for(let i=0;i<m;i++) gr[i]=[];
+			for(let i=0;i<n;i++) lis[i].sort(function(a,b){
+					return (a[0]-b[0])*1000+(a[1]-b[1]);
+				});
+			for(let i=0;i<n;i++) for(let j=0;j<lis[i].length-1;j++){
+				gr[lis[i][j][2]].push(lis[i][j+1][2]);
+				gr[lis[i][j+1][2]].push(lis[i][j][2]);
+			}
+			cnt=0;
+			for(let i=0;i<m;i++){
+				init=i;
+				for(let j=0;j<4;j++){
+					cur=[];
+					if(dfs(i,null)){
+						var polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon"),c;
+						if(regionColor==="color") c=randomColor();
+						else if(regionColor==="grey") c=randomColor({hue:'monochrome'});
+						else if(regionColor==="custom") c=colors[cnt%colors.length];
+						else if(regionColor==="customSimilar") c=randomColor({hue: colors[cnt%colors.length]});
+						canv.fillStyle=c; cnt++;
+						canv.beginPath();
+						canv.moveTo(cur[0][0],cur[0][1]);
+						for(let k=1;k<cur.length;k++) canv.lineTo(cur[k][0],cur[k][1]);
+						canv.closePath();
+						canv.fill();
+					}
+				}
+			}
+			console.log("Time taken:",Date.now()-start,cnt);
+			n-=4;
+		}
+		function dfs(v,p){
+			if(v===init&&p!==null) return true;
+			if(is[v][0]<0||is[v][1]<0||is[v][0]>W+1||is[v][1]>H+1) return false;
+			cur.push(is[v]);
+			for(let i=0;i<gr[v].length;i++) if(gr[v][i]!==null){
+				if(p===null||cross(is[v],is[p],is[gr[v][i]])>1e-6){
+					let nxt=gr[v][i];
+					gr[v][i]=null;
+					return dfs(nxt,v);
+				}
+			}
+			return false;
+		}
+		function cross(p0,p1,p2){
+			return (p1[0]-p0[0])*(p2[1]-p0[1])-(p1[1]-p0[1])*(p2[0]-p0[0]);
+		}
+		function det(a,b,c,d){
+			return a*d-b*c;
+		}
+		function intersect(l1,l2){
+			let [[x1,y1],[x2,y2]]=l1,[[x3,y3],[x4,y4]]=l2;
+			let a=det(x1,y1,x2,y2),b=det(x3,y3,x4,y4),c=det(x1-x2,y1-y2,x3-x4,y3-y4);
+			if(c===0) return null;
+			return [det(a,x1-x2,b,x3-x4)/c,det(a,y1-y2,b,y3-y4)/c];
+		}
+	</script>
+</html>

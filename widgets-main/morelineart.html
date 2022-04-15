@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<title>Aaeria | Widgets</title>
+		<link rel="icon" href="assets/images/logo.ico" type="image/icon">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="assets/styles.css" type="text/css">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+	</head>
+	<body>
+		<header>
+			<h1><a href="index.html">Widgets</a></h1>
+			<a href="https://aaeria.me"><img src="assets/images/logo.ico" alt="logo"></a>
+		</header>
+		<div class="main">
+			<a href="index.html">Back</a>
+			<h1>Art With More Lines</h1>
+			<p id="note"></p>
+			<div>
+				Image Size:
+				<input class="smallInput" type="number" onchange="updW(event)">
+				<input class="smallInput" type="number" onchange="updH(event)">
+				Line Count: 
+				<input class="smallInput" type="number" onchange="updLineNumb(event)">
+				Length:
+				<select onchange="updLen(event)">
+					<option value="infinite">Infinite</option>
+					<option value="long">Long</option>
+					<option value="short">Short</option>
+				</select>
+				Width:
+				<input class="smallInput" type="number" onchange="updLineWidth(event)">
+				Style:
+				<select onchange="updLineStyle(event)">
+					<option value="twisted">3D</option>
+					<option value="flat">Flat</option>
+					<option value="samewidth">Same Width</option>
+				</select>
+				<select onchange="updLineColor(event)">
+					<option value="black">Black</option>
+					<option value="white">White</option>
+					<option value="color">Color</option>
+					<option value="grey">Grey</option>
+					<option value="custom">Custom</option>
+					<option value="customSimilar">Similar</option>
+				</select>
+				Background:
+				<select onchange="updBackground(event)">
+					<option value="none">None</option>
+					<option value="white">White</option>
+					<option value="black">Black</option>
+				</select>
+				Balls:
+				<select onchange="updBall(event)">
+					<option value=0>None</option>
+					<option value=0.2>Low</option>
+					<option value=0.5>High</option>
+				</select>
+				<div id="customColor" style="display:none;">
+					Enter a list of HTML color names or hex codes, separated by spaces:
+					<textarea id="customColorList"></textarea>
+				</div>
+				<button onclick="gen()">Generate</button>
+			</div>
+			<svg id="picture">
+			</svg>
+			<p>Abstract art with even more lines!</p>
+		</div>
+		<footer>
+			<a href="https://github.com/zzaria/widgets"><i class="fab fa-github"></i></a>
+			<div class="bottom">
+				<p>2020 | <a href="https://aaeria.me">Aaeria</a></p>
+			</div>
+		</footer>
+	</body>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.6.1/randomColor.min.js"></script>
+	<script>
+		var svg=document.getElementById("picture");
+		var W=window.innerWidth*0.6,H=window.innerHeight*0.6,bounded=true,lineLen="infinite",lineWidth=10,lineStyle="twisted",lineColor="black",background="none",ballChance=0;
+		var n=20;
+		var lines,cnt=0,colors;
+		gen();
+		function updW(e){
+			W=Math.max(1,Math.min(1e6,e.target.value));
+		}
+		function updH(e){
+			H=Math.max(1,Math.min(1e6,e.target.value));
+		}
+		function updLen(e){
+			lineLen=e.target.value;
+		}
+		function updLineNumb(e){
+			n=Math.max(0,Math.min(100000,e.target.value));
+			if(n>5000) document.getElementById("note").innerHTML="Warning: this may take long"
+			else document.getElementById("note").innerHTML="";
+		}
+		function updLineWidth(e){
+			lineWidth=Math.max(0,Math.min(1e6,e.target.value));
+		}
+		function updLineStyle(e){
+			lineStyle=e.target.value;
+		}
+		function updLineColor(e){
+			lineColor=e.target.value;
+			if(lineColor==="custom"||lineColor==="customSimilar") document.getElementById("customColor").style['display']='block';
+			else document.getElementById("customColor").style['display']='none';
+		}
+		function updBackground(e){
+			background=e.target.value;
+		}
+		function updBall(e){
+			ballChance=e.target.value;
+		}
+		function gen(){ // parallel lines ok, vertical lines ok, 3 lines intersection not ok
+			var start=Date.now();
+			while (svg.lastChild){
+			    svg.removeChild(svg.lastChild);
+			}
+			svg.setAttribute("width",W); svg.setAttribute("height",H);
+			if(background!=="none"){
+				var bg=document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+				bg.setAttribute('x',0); bg.setAttribute('y',0); bg.setAttribute('width',W);	bg.setAttribute('height',H);
+				bg.setAttribute('fill',background);
+				svg.appendChild(bg);
+			}
+			lines=[]; lis=[]; is=[]; id=new Map(); gr=[];
+			minX=minY=1e9; maxX=maxY=-1e9;
+			colors=document.getElementById("customColorList").value.split(" ");
+			for(let i=0;i<n;i++){
+				if(lineLen==="infinite"){
+					if(Math.random()<H/(H+W)) 
+						lines.push([[-lineWidth,Math.random()*H],[W+lineWidth,Math.random()*H]]);
+					else
+						lines.push([[Math.random()*W,-lineWidth],[Math.random()*W,H+lineWidth]]);
+				}
+				else if(lineLen==="long"){
+					let x1,x2,y1,y2;
+					do{
+						x1=(Math.random()-1/4)*W*1.8,y1=(Math.random()-1/4)*H*1.8,x2=(Math.random()-1/4)*H*1.8,y2=(Math.random()-1/4)*W*1.8;
+					}while(dist(x1,y1,x2,y2)<(H+W)/1.5||Math.random()<0.2);
+					lines.push([[x1,y1],[x2,y2]]);
+				}
+				else if(lineLen==="short"){
+					let x=Math.random()*W,y=Math.random()*H;
+					lines.push([[x,y],[x+Math.random()*W/5-W/10,y+Math.random()*H/5-H/10]]);
+				}
+				drawLine(lines[i]);
+				if(Math.random()<ballChance) drawCircle(Math.random()*W,Math.random()*H,Math.random()*Math.min(H,W)/8);
+			}
+		}
+		function randThick(lr){
+			return (Math.random()-0.5)*lineWidth;
+		}
+		function randColor(){
+			if(lineColor==="black") return 'black';
+			else if(lineColor==="white") return 'white';
+			else if(lineColor==="color") return randomColor();
+			else if(lineColor==="grey") return randomColor({hue:'monochrome'});
+			else if(lineColor==="custom") return colors[cnt%colors.length];
+			else if(lineColor==="customSimilar") return randomColor({hue: colors[cnt%colors.length]});
+		}
+		function drawLine(line){
+			var polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon"),c=randColor();
+			cnt++;
+			if(lineStyle==="flat" || lineStyle==="samewidth"){
+				var newLine = document.createElementNS('http://www.w3.org/2000/svg','line');
+				newLine.setAttribute('x1',line[0][0]);
+				newLine.setAttribute('y1',line[0][1]);
+				newLine.setAttribute('x2',line[1][0]);
+				newLine.setAttribute('y2',line[1][1]);
+				newLine.style['stroke']=c;
+				if(lineStyle==="samewidth")
+					newLine.style['stroke-width']=lineWidth;
+				else
+					newLine.style['stroke-width']=lineWidth*Math.random();
+				svg.appendChild(newLine);
+				return;
+			}
+			polygon.style['fill']=c;
+			//polygon.setAttribute('filter','url(#light)');
+			svg.appendChild(polygon);
+			var point;
+			point = svg.createSVGPoint();
+			point.x = line[0][0]+randThick(0);
+			point.y = line[0][1]+randThick(0);
+		 	polygon.points.appendItem(point);
+			point = svg.createSVGPoint();
+			point.x = line[0][0]+randThick(1);
+			point.y = line[0][1]+randThick(1);
+		 	polygon.points.appendItem(point);
+			point = svg.createSVGPoint();
+			point.x = line[1][0]+randThick(1);
+			point.y = line[1][1]+randThick(1);
+		 	polygon.points.appendItem(point);
+			point = svg.createSVGPoint();
+			point.x = line[1][0]+randThick(0);
+			point.y = line[1][1]+randThick(0);
+		 	polygon.points.appendItem(point);
+		}
+		function drawCircle(x,y,r){
+			if(x<0||y<0||x>W||y>H) return;
+			var newLine = document.createElementNS('http://www.w3.org/2000/svg','circle');
+			newLine.setAttribute('cx',x);
+			newLine.setAttribute('cy',y);
+			newLine.setAttribute('r',r);
+			newLine.setAttribute('fill',randColor());
+			svg.appendChild(newLine);
+		}
+		function dist(x1,y1,x2,y2){
+			return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+		}
+		/*<filter id="light">
+	         <!--Blur effect-->
+	         <!--Lighting effect-->
+	        <feSpecularLighting result="spec3" specularConstant="1" specularExponent="8" lighting-color="#FFF">
+	            <!--Light source effect-->
+	            <feSpotLight x="2000" y="500" z="100" limitingConeAngle="10" />
+	        </feSpecularLighting>
+	        <!--Composition of inputs-->
+	        <feComposite in="SourceGraphic" in2="spec3" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
+		</filter>*/
+	</script>
+</html>

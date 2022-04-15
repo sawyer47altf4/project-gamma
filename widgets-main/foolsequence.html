@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<title>Aaeria | Widgets</title>
+		<link rel="icon" href="assets/images/logo.ico" type="image/icon">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="assets/styles.css" type="text/css">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+	</head>
+	<body>
+		<header>
+			<h1><a href="index.html">Widgets</a></h1>
+			<a href="https://aaeria.me"><img src="assets/images/logo.ico" alt="logo"></a>
+		</header>
+		<div class="main">
+			<a href="index.html">Back</a>
+			<h1>The Fool's Sequence</h1>
+			<p>Finds nth smallest funny number (see examples below).</p>
+			<label for="in">Number:</label>
+			<input type="number" id="in" onchange="foolsequence()">
+			<p>Result:</p>
+			<input type="text" class="largeInput" id="out1" readonly>
+			<input type="text" id="out2" readonly>
+			<p>First 47 terms: 
+69
+420
+6969
+42069
+69420
+420420
+696969
+4206969
+6942069
+6969420
+42042069
+42069420
+69420420
+69696969
+420420420
+420696969
+694206969
+696942069
+696969420
+4204206969
+4206942069
+4206969420
+6942042069
+6942069420
+6969420420
+6969696969
+42042042069
+42042069420
+42069420420
+42069696969
+69420420420
+69420696969
+69694206969
+69696942069
+69696969420
+420420420420
+420420696969
+420694206969
+420696942069
+420696969420
+694204206969
+694206942069
+694206969420
+696942042069
+696942069420
+696969420420
+696969696969</p>
+		<h2>Note</h2>
+		<p>The program works using a dynamic programming algorithm.</p>
+		</div>
+		<footer>
+			<a href="https://github.com/zzaria/widgets"><i class="fab fa-github"></i></a>
+			<div class="bottom">
+				<p>2020 | <a href="https://aaeria.me">Aaeria</a></p>
+			</div>
+		</footer>
+	</body>
+	
+	<script>
+		function foolsequence(){
+			var n = BigInt(document.getElementById("in").value);
+			let dp=[1n,0n,1n,1n],ans="",a=0;
+			n-=2n;
+			if(n<=-2) ans="0";
+			else if(n==-1) ans="69";
+			else if(n==0) ans="420";
+			else for(let i=4;;i++){
+				dp[i]=dp[i-2]+dp[i-3];
+				if(dp[i]>=n){
+					while(i>=2){
+						if(i>=3&&dp[i-3]>=n){
+							ans+=420;
+							i-=3;
+						}
+						else{
+							ans+=69;
+							if(i>=3) n-=dp[i-3];
+							i-=2;
+						}
+					}
+					break;
+				}
+				n-=dp[i];
+			}
+			document.getElementById("out1").value=ans;
+			document.getElementById("out2").value=ans[0]+"."+ans.substr(1,10)+"e"+(ans.length-1);
+		}
+	</script>
+</html>
