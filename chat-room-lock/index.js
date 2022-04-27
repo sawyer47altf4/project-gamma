@@ -1,8 +1,3 @@
-sawyer = 3377b4
-big C = ac11b7
-bata_tester = 5e41d1
-trust key = 388e85
-
 var password = window. prompt("Enter your key: ");
 if (password === "3377b4") {
       alert("wellcome sawyer47");
