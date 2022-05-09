@@ -1,17 +1,17 @@
 // Options the user could type in
 const prompts = [
   ["hi", "hey", "hello", "good morning", "good afternoon"],
-  ["how are you", "how is life", "how are things"],
-  ["what are you doing", "what is going on", "what is up"],
-  ["how old are you"],
-  ["who are you", "are you human", "are you bot", "are you human or bot"],
+  ["how are you", "how is life", "how are things","how are you?", "how is life?", "how are things?"],
+  ["what are you doing", "what is going on", "what is up", "what are you doing?", "what is going on?", "what is up?"],
+  ["how old are you", "how old are you?"],
+  ["who are you", "are you human", "are you bot", "are you human or bot", "who are you?", "are you human?", "are you bot?", "are you human or bot?", "are you a bot", "are you a bot?"],
   ["who created you", "who made you"],
   [
     "your name please",
     "your name",
     "may i know your name",
     "what is your name",
-    "what call yourself"
+    "what do you call yourself"
   ],
   ["i love you"],
   ["happy", "good", "fun", "wonderful", "fantastic", "cool"],
@@ -26,8 +26,7 @@ const prompts = [
   [""],
   ["haha","ha","lol","hehe","funny","joke"],
   ["am i gay"],
-  ["who is gay"],
-  ["is sawyer gay", "is sawyer47 gay"],
+  ["is sawyer gay", "is sawyer47 gay", "is sawyer gay?", "is sawyer47 gay?"],
   ["fuck you"],
   ["vr"]
 ]
@@ -50,7 +49,7 @@ const replies = [
   ["I am infinite"],
   ["I am just a bot", "I am a bot. What are you?"],
   ["The one true God, sawyer47"],
-  ["I am nameless", "I don't have a name"],
+  ["I am mr robot man"],
   ["I love you too", "Me too"],
   ["Have you ever felt bad?", "Glad to hear it"],
   ["Why?", "Why? You shouldn't!", "Try watching TV"],
@@ -63,9 +62,8 @@ const replies = [
   ["That's ok","I understand","What do you want to talk about?"],
   ["Please say something :("],
   ["Haha!","Good one!"],
-  ["yes"],
-  ["you"],
-  ["no you are"],
+  ["idk"],
+  ["no"],
   ["i would fuck me too"],
   ["is cool"]
 ]
